@@ -1,0 +1,8 @@
+server:
+    socket: /var/run/myza/server.sock
+    confirmation: XXXXXXXX
+    api:
+        token: XXX
+
+log:
+    prod: false
