@@ -22,9 +22,9 @@ const (
 
 func TestBalanceRequestHandler_Handle_GotBalance(t *testing.T) {
 	const (
-		balance     = 25000
-		expectedMsg = `balance is 0.000250 BTC`
-		peerId      = 1
+		peerId           = 1
+		blockchainAnswer = `{"hash160":"string","address":"string","n_tx":2,"n_unredeemed":0,"total_received":25000,"total_sent":25000,"final_balance":25000,"txs":[{"hash":"string","ver":1,"vin_sz":1,"vout_sz":1,"size":189,"weight":756,"fee":384,"relayed_by":"0.0.0.0","lock_time":0,"tx_index":1,"double_spend":false,"time":1,"block_index":1,"block_height":1,"inputs":[{"sequence":1,"witness":"","script":"string","index":0,"prev_out":{"spent":true,"script":"string","spending_outpoints":[{"tx_index":1,"n":0}],"tx_index":1,"value":25000,"addr":"string","n":0,"type":0}}],"out":[{"type":0,"spent":false,"value":24616,"spending_outpoints":[],"n":0,"tx_index":1,"script":"string","addr":"string"}],"result":-25000,"balance":0},{"hash":"string","ver":2,"vin_sz":1,"vout_sz":2,"size":226,"weight":904,"fee":452,"relayed_by":"0.0.0.0","lock_time":710953,"tx_index":1,"double_spend":false,"time":1,"block_index":1,"block_height":1,"inputs":[{"sequence":1,"witness":"","script":"string","index":0,"prev_out":{"spent":true,"script":"string","spending_outpoints":[{"tx_index":1,"n":0}],"tx_index":1,"value":52218,"addr":"string","n":0,"type":0}}],"out":[{"type":0,"spent":true,"value":25000,"spending_outpoints":[{"tx_index":1,"n":0}],"n":0,"tx_index":1,"script":"string","addr":"string"},{"type":0,"spent":false,"value":26766,"spending_outpoints":[],"n":1,"tx_index":1,"script":"string","addr":"string"}],"result":25000,"balance":25000}]}`
+		expectedMsg      = `balance is 0.000250 BTC`
 	)
 
 	var (
@@ -36,7 +36,6 @@ func TestBalanceRequestHandler_Handle_GotBalance(t *testing.T) {
 		handler               domain.TextHandler
 		logger                = zap.NewNop().Sugar()
 		userRequest           = domain.NewTextRequest(peerId, addr)
-		blockchainAnswer, _   = json.Marshal(&domain.AddrResponse{FinalBalance: balance})
 		vkAnswer, _           = json.Marshal(&api2.Response{})
 		cfg                   = config.Config{
 			Api: config.Api{
@@ -59,7 +58,7 @@ func TestBalanceRequestHandler_Handle_GotBalance(t *testing.T) {
 	rnd.On(`Rnd`).Return(rndId)
 
 	blockchainApiResponse = &http.Response{
-		Body: ioutil.NopCloser(bytes.NewReader(blockchainAnswer)),
+		Body: ioutil.NopCloser(bytes.NewReader([]byte(blockchainAnswer))),
 	}
 	blockchainHttpRequest, _ = http.NewRequest(`GET`, fmt.Sprintf(addrPattern, addr), nil)
 	client.On(`Do`, blockchainHttpRequest).Once().Return(blockchainApiResponse, nil)

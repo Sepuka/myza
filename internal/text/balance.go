@@ -96,6 +96,6 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 
 		return err
 	}
-
-	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprintf(balanceMsgTmpl, answer.BalanceToBTC()))
+	var f = answer.BalanceToBTC()
+	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprintf(balanceMsgTmpl, f))
 }
