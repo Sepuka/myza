@@ -7,6 +7,10 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	addrLen = 34
+)
+
 type (
 	Text struct {
 		api          *api.Api
@@ -28,19 +32,20 @@ func NewText(
 	}
 }
 
+// Handle is a custom user's requests factory which creates concrete handler
 func (h *Text) Handle(vkReq *domain.Request) error {
 	var (
-		msg                = vkReq.Object.Message.Text
-		peerId             = int(vkReq.Object.Message.FromId)
-		userRequest        = domain2.NewTextRequest(peerId, msg)
-		userRequestHandler domain2.TextHandler
+		msg         = vkReq.Object.Message.Text
+		peerId      = int(vkReq.Object.Message.FromId)
+		userRequest = domain2.NewTextRequest(peerId, msg)
+		handler     domain2.TextHandler
 	)
 
-	if len(msg) == 34 {
-		userRequestHandler = h.textHandlers[BalanceIdHandler]
+	if len(msg) == addrLen {
+		handler = h.textHandlers[BalanceIdHandler]
 	} else {
-		userRequestHandler = h.textHandlers[UnknownIdHandler]
+		handler = h.textHandlers[UnknownIdHandler]
 	}
 
-	return userRequestHandler.Handle(userRequest)
+	return handler.Handle(userRequest)
 }

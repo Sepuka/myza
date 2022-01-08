@@ -10,7 +10,10 @@ import (
 	"net/http/httputil"
 )
 
-const addrPattern = `https://blockchain.info/rawaddr/%s`
+const (
+	addrPattern    = `https://blockchain.info/rawaddr/%s`
+	balanceMsgTmpl = `balance is %f BTC`
+)
 
 type (
 	BalanceRequestHandler struct {
@@ -40,7 +43,6 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		request      *http.Request
 		dumpResponse []byte
 		answer       = domain.NewAddrResponse()
-		btcBalance   float64
 	)
 
 	if request, err = http.NewRequest(`GET`, url, nil); err != nil {
@@ -95,7 +97,5 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		return err
 	}
 
-	btcBalance = float64(answer.FinalBalance / 100000000)
-
-	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprintf(`balance is %f BTC`, btcBalance))
+	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprintf(balanceMsgTmpl, answer.BalanceToBTC()))
 }
