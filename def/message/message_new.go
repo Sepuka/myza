@@ -35,16 +35,16 @@ func init() {
 			Build: func(ctx di.Container) (interface{}, error) {
 				var (
 					logger         = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
-					api            = ctx.Get(method.ApiDef).(*api2.Api)
-					client         = ctx.Get(http.ClientDef).(*http2.Client)
+					vkApi          = ctx.Get(method.ApiDef).(*api2.Api)
+					httpClient     = ctx.Get(http.ClientDef).(*http2.Client)
 					buttonHandlers = map[string]message.Handler{
-						button.StartIdButton: handler.NewStartHandler(api),
+						button.StartIdButton: handler.NewStartHandler(vkApi),
 					}
 					textHandlers = map[string]domain.TextHandler{
 						handler.UnknownIdHandler: text.NewUnknownRequestHandler(),
-						handler.BalanceIdHandler: text.NewBalanceRequestHandler(logger, client, api),
+						handler.BalanceIdHandler: text.NewBalanceRequestHandler(logger, httpClient, vkApi),
 					}
-					textHandler = handler.NewText(api, logger, textHandlers)
+					textHandler = handler.NewText(vkApi, logger, textHandlers)
 				)
 				return msgHandler.NewMessageNew(logger, buttonHandlers, textHandler), nil
 			},

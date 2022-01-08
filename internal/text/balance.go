@@ -42,7 +42,7 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		answer       = domain.NewAddrResponse()
 	)
 
-	if request, err = http.NewRequest(`POST`, url, nil); err != nil {
+	if request, err = http.NewRequest(`GET`, url, nil); err != nil {
 		b.
 			logger.
 			With(
