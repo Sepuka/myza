@@ -15,9 +15,9 @@ import (
 
 type (
 	MessageNew struct {
-		logger        *zap.SugaredLogger
-		handlers      map[string]message.Handler
-		answerHandler *handler.Text
+		logger      *zap.SugaredLogger
+		handlers    map[string]message.Handler
+		textHandler *handler.Text
 	}
 )
 
@@ -27,9 +27,9 @@ func NewMessageNew(
 	answerHandler *handler.Text,
 ) *MessageNew {
 	return &MessageNew{
-		logger:        logger,
-		handlers:      handlers,
-		answerHandler: answerHandler,
+		logger:      logger,
+		handlers:    handlers,
+		textHandler: answerHandler,
 	}
 }
 
@@ -58,7 +58,7 @@ func (o *MessageNew) Exec(req *domain.Request, resp http.ResponseWriter) error {
 			}
 		}
 	} else {
-		if err = o.answerHandler.Handle(req); err != nil {
+		if err = o.textHandler.Handle(req); err != nil {
 			return err
 		}
 	}
