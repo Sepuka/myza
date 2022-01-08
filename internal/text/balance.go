@@ -40,6 +40,7 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		request      *http.Request
 		dumpResponse []byte
 		answer       = domain.NewAddrResponse()
+		btcBalance   float64
 	)
 
 	if request, err = http.NewRequest(`GET`, url, nil); err != nil {
@@ -74,6 +75,14 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		return err
 	}
 
+	b.
+		logger.
+		With(
+			zap.String(`address`, req.GetMessage()),
+			zap.ByteString(`response`, dumpResponse),
+		).
+		Info(`Balance response`)
+
 	if err = json.NewDecoder(resp.Body).Decode(answer); err != nil {
 		b.
 			logger.
@@ -86,5 +95,7 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		return err
 	}
 
-	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprint(answer.FinalBalance))
+	btcBalance = float64(answer.FinalBalance / 100000000)
+
+	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprintf(`balance is %f BTC`, btcBalance))
 }
