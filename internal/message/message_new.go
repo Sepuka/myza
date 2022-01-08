@@ -83,3 +83,7 @@ func (o *MessageNew) buildPayloadError(msg domain.Message, err error, text strin
 
 	return errors.NewInvalidJsonError(fmt.Sprintf(`%v`, msg), err)
 }
+
+func (o *MessageNew) String() string {
+	return `message_new`
+}
