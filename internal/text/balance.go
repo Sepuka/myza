@@ -23,6 +23,7 @@ type (
 	}
 )
 
+// NewBalanceRequestHandler creates an object which can check wallet balance
 func NewBalanceRequestHandler(
 	logger *zap.SugaredLogger,
 	client api.HTTPClient,
@@ -35,14 +36,15 @@ func NewBalanceRequestHandler(
 	}
 }
 
+// Handle handles user's requests
 func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 	var (
-		url          = fmt.Sprintf(addrPattern, req.GetMessage())
 		err          error
 		resp         *http.Response
 		request      *http.Request
 		dumpResponse []byte
 		answer       = domain.NewAddrResponse()
+		url          = fmt.Sprintf(addrPattern, req.GetMessage())
 	)
 
 	if request, err = http.NewRequest(`GET`, url, nil); err != nil {
@@ -50,8 +52,9 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 			logger.
 			With(
 				zap.Error(err),
+				zap.String(`url`, url),
 			).
-			Errorf(`build Api request error`)
+			Errorf(`Build balance API request error`)
 
 		return err
 	}
@@ -62,7 +65,8 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 			With(
 				zap.Error(err),
 				zap.String(`url`, url),
-			)
+			).
+			Error(`Send balance API request error`)
 		return err
 	}
 
@@ -71,8 +75,10 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 			logger.
 			With(
 				zap.Error(err),
+				zap.Int64(`size`, resp.ContentLength),
+				zap.Int(`code`, resp.StatusCode),
 			).
-			Errorf(`dump Api response error`)
+			Errorf(`Dump API response error`)
 
 		return err
 	}
@@ -83,7 +89,7 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 			zap.String(`address`, req.GetMessage()),
 			zap.ByteString(`response`, dumpResponse),
 		).
-		Info(`Balance response`)
+		Info(`Balance API response`)
 
 	if err = json.NewDecoder(resp.Body).Decode(answer); err != nil {
 		b.
@@ -96,6 +102,6 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 
 		return err
 	}
-	var f = answer.BalanceToBTC()
-	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprintf(balanceMsgTmpl, f))
+
+	return b.vkApi.SendMessage(req.GetPeerId(), fmt.Sprintf(balanceMsgTmpl, answer.BalanceToBTC()))
 }
