@@ -1,5 +1,7 @@
 package domain
 
+import "encoding/json"
+
 const (
 	MinorDiv = 100000000
 )
@@ -20,4 +22,8 @@ func NewAddrResponse() *AddrResponse {
 
 func (r *AddrResponse) BalanceToBTC() float64 {
 	return r.FinalBalance / MinorDiv
+}
+
+func (r *AddrResponse) MarshalBinary() (data []byte, err error) {
+	return json.Marshal(r)
 }

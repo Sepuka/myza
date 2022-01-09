@@ -17,12 +17,13 @@ func init() {
 			Name: BotMiddlewareDef,
 			Build: func(ctx di.Container) (interface{}, error) {
 				var (
-					terminalMiddleware = []func(handlerFunc middleware.HandlerFunc) middleware.HandlerFunc{
+					middlewares = []func(handlerFunc middleware.HandlerFunc) middleware.HandlerFunc{
 						middleware.Panic,
+						middleware.Cache(cfg.Server),
 					}
 				)
 
-				return middleware.BuildHandlerChain(terminalMiddleware), nil
+				return middleware.BuildHandlerChain(middlewares), nil
 			},
 		})
 	})

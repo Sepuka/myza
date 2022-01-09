@@ -1,8 +1,10 @@
 package message
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sepuka/myza/def"
+	cache2 "github.com/sepuka/myza/def/cache"
 	"github.com/sepuka/myza/def/http"
 	"github.com/sepuka/myza/def/log"
 	"github.com/sepuka/myza/def/vkapi/method"
@@ -37,12 +39,14 @@ func init() {
 					logger         = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
 					vkApi          = ctx.Get(method.ApiDef).(*api2.Api)
 					httpClient     = ctx.Get(http.ClientDef).(*http2.Client)
+					cache          = ctx.Get(cache2.CacheDef).(*redis.Client)
 					buttonHandlers = map[string]message.Handler{
-						button.StartIdButton: handler.NewStartHandler(vkApi),
+						button.StartIdButton:    handler.NewStartHandler(vkApi),
+						button.WithdrawIdButton: handler.NewWithdrawHandler(vkApi),
 					}
 					textHandlers = map[string]domain.TextHandler{
 						handler.UnknownIdHandler: text.NewUnknownRequestHandler(),
-						handler.BalanceIdHandler: text.NewBalanceRequestHandler(logger, httpClient, vkApi),
+						handler.BalanceIdHandler: text.NewBalanceRequestHandler(logger, httpClient, vkApi, cache),
 					}
 					textHandler = handler.NewText(vkApi, logger, textHandlers)
 				)

@@ -3,6 +3,9 @@ server:
     confirmation: XXXXXXXX
     api:
         token: XXX
+    cache:
+      enabled: true
+      ttl: 1000000000
 
 log:
     prod: false
