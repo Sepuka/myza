@@ -1,11 +1,10 @@
-package text
+package message
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-redis/redis/v8"
 	"github.com/sepuka/myza/domain"
-	button2 "github.com/sepuka/myza/internal/message/button"
+	button2 "github.com/sepuka/myza/internal/income/button"
 	"github.com/sepuka/vkbotserver/api"
 	"github.com/sepuka/vkbotserver/api/button"
 	"go.uber.org/zap"
@@ -16,16 +15,18 @@ import (
 
 const (
 	addrPattern    = `https://blockchain.info/rawaddr/%s`
-	balanceMsgTmpl = `balance is %f BTC (скоро тут появится конвертация в рубли)`
+	balanceMsgTmpl = `Ваш баланс %f BTC (%d руб)`
 	keyTmpl        = `balance_%d_%s`
+	ttl            = 60 * time.Second
 )
 
 type (
 	BalanceRequestHandler struct {
-		logger *zap.SugaredLogger
-		client api.HTTPClient
-		vkApi  *api.Api
-		cache  *redis.Client
+		logger    *zap.SugaredLogger
+		client    api.HTTPClient
+		vkApi     *api.Api
+		cache     domain.Cache
+		converter domain.ExchangeRateConverter
 	}
 )
 
@@ -34,13 +35,15 @@ func NewBalanceRequestHandler(
 	logger *zap.SugaredLogger,
 	client api.HTTPClient,
 	vkApi *api.Api,
-	cache *redis.Client,
+	cache domain.Cache,
+	converter domain.ExchangeRateConverter,
 ) *BalanceRequestHandler {
 	return &BalanceRequestHandler{
-		logger: logger,
-		client: client,
-		vkApi:  vkApi,
-		cache:  cache,
+		logger:    logger,
+		client:    client,
+		vkApi:     vkApi,
+		cache:     cache,
+		converter: converter,
 	}
 }
 
@@ -51,7 +54,9 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		resp         *http.Response
 		request      *http.Request
 		dumpResponse []byte
-		answer       *domain.AddrResponse
+		wallet       *domain.Wallet
+		amount       float64
+		answer       string
 		url          = fmt.Sprintf(addrPattern, req.GetMessage())
 		keyboard     = button.Keyboard{
 			OneTime: true,
@@ -59,7 +64,7 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		}
 	)
 
-	if answer = b.getCache(req); answer == nil {
+	if wallet = b.getCache(req); wallet == nil {
 		if request, err = http.NewRequest(`GET`, url, nil); err != nil {
 			b.
 				logger.
@@ -104,8 +109,8 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 			).
 			Info(`Balance API response`)
 
-		answer = domain.NewAddrResponse()
-		if err = json.NewDecoder(resp.Body).Decode(answer); err != nil {
+		wallet = domain.NewWallet()
+		if err = json.NewDecoder(resp.Body).Decode(wallet); err != nil {
 			b.
 				logger.
 				With(
@@ -116,23 +121,24 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 
 			return err
 		}
-		b.setCache(req, answer)
+		b.setCache(req, wallet)
 	}
 
-	return b.vkApi.SendMessageWithButton(req.GetPeerId(), fmt.Sprintf(balanceMsgTmpl, answer.BalanceToBTC()), keyboard)
+	amount, err = b.converter.Convert(wallet, req.FiatCurrency)
+	answer = fmt.Sprintf(balanceMsgTmpl, wallet.BalanceToBTC(), int(amount))
+
+	return b.vkApi.SendMessageWithButton(req.GetPeerId(), answer, keyboard)
 }
 
-func (b *BalanceRequestHandler) getCache(req domain.TextRequest) *domain.AddrResponse {
+func (b *BalanceRequestHandler) getCache(req domain.TextRequest) *domain.Wallet {
 	var (
 		key      = fmt.Sprintf(keyTmpl, req.GetPeerId(), req.GetMessage())
-		cache    *redis.StringCmd
 		value    string
-		response domain.AddrResponse
+		response domain.Wallet
 		err      error
 	)
 
-	cache = b.cache.Get(b.cache.Context(), key)
-	value = cache.Val()
+	value = b.cache.Get(b.cache.Context(), key).Val()
 	if len(value) > 0 {
 		if err = json.Unmarshal([]byte(value), &response); err == nil {
 			return &response
@@ -142,11 +148,7 @@ func (b *BalanceRequestHandler) getCache(req domain.TextRequest) *domain.AddrRes
 	return nil
 }
 
-func (b *BalanceRequestHandler) setCache(req domain.TextRequest, cache *domain.AddrResponse) {
-	const (
-		ttl = 60 * time.Second
-	)
-
+func (b *BalanceRequestHandler) setCache(req domain.TextRequest, cache *domain.Wallet) {
 	var (
 		key = fmt.Sprintf(keyTmpl, req.GetPeerId(), req.GetMessage())
 		err error

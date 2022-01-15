@@ -12,6 +12,7 @@ const (
 )
 
 type (
+	// Text encapsulates users' requests handler
 	Text struct {
 		api          *api.Api
 		log          *zap.SugaredLogger

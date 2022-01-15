@@ -4,6 +4,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sepuka/myza/def"
+	"github.com/sepuka/myza/internal/cache"
 	"github.com/sepuka/myza/internal/config"
 )
 
@@ -18,10 +19,10 @@ func init() {
 					client = redis.NewClient(&redis.Options{})
 				)
 
-				return client, nil
+				return cache.NewRedis(client), nil
 			},
 			Close: func(obj interface{}) error {
-				return obj.(*redis.Client).Close()
+				return obj.(*cache.Redis).Close()
 			},
 		})
 	})

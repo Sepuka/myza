@@ -6,7 +6,7 @@ const (
 	MinorDiv = 100000000
 )
 
-type AddrResponse struct {
+type Wallet struct {
 	Hash160       string  `json:"hash160"`
 	Address       string  `json:"address"`
 	NTx           int     `json:"n_tx"`
@@ -16,14 +16,14 @@ type AddrResponse struct {
 	FinalBalance  float64 `json:"final_balance"`
 }
 
-func NewAddrResponse() *AddrResponse {
-	return &AddrResponse{}
+func NewWallet() *Wallet {
+	return &Wallet{}
 }
 
-func (r *AddrResponse) BalanceToBTC() float64 {
+func (r *Wallet) BalanceToBTC() float64 {
 	return r.FinalBalance / MinorDiv
 }
 
-func (r *AddrResponse) MarshalBinary() (data []byte, err error) {
+func (r *Wallet) MarshalBinary() (data []byte, err error) {
 	return json.Marshal(r)
 }

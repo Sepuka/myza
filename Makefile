@@ -11,3 +11,6 @@ build:
 
 tests:
 	go test ./...
+
+mocks:
+	mockery --all --dir domain --output domain/mocks

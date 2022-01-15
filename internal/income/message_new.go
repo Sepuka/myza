@@ -1,9 +1,9 @@
-package message
+package income
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sepuka/myza/internal/message/handler"
+	"github.com/sepuka/myza/internal/income/handler"
 	"github.com/sepuka/vkbotserver/api"
 	"github.com/sepuka/vkbotserver/api/button"
 	"github.com/sepuka/vkbotserver/domain"
@@ -14,21 +14,23 @@ import (
 )
 
 type (
+	// MessageNew handles VK message "message_new"
 	MessageNew struct {
 		logger      *zap.SugaredLogger
-		handlers    map[string]message.Handler
+		btnHandlers map[string]message.Handler
 		textHandler *handler.Text
 	}
 )
 
+// NewMessageNew is a MessageNew's constructor
 func NewMessageNew(
 	logger *zap.SugaredLogger,
-	handlers map[string]message.Handler,
+	btnHandlers map[string]message.Handler,
 	answerHandler *handler.Text,
 ) *MessageNew {
 	return &MessageNew{
 		logger:      logger,
-		handlers:    handlers,
+		btnHandlers: btnHandlers,
 		textHandler: answerHandler,
 	}
 }
@@ -51,7 +53,7 @@ func (o *MessageNew) Exec(req *domain.Request, resp http.ResponseWriter) error {
 			return o.buildPayloadError(req.Object.Message, err, `invalid payload JSON`)
 		}
 
-		if buttonHandler, isHandlerKnown = o.handlers[payloadData.Command]; isHandlerKnown {
+		if buttonHandler, isHandlerKnown = o.btnHandlers[payloadData.Command]; isHandlerKnown {
 			o.logger.Debugf(`Got "%s" command`, payloadData.Command)
 			if err = buttonHandler.Handle(req, &payloadData); err != nil {
 				o.logger.Error(err)

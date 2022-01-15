@@ -3,8 +3,8 @@ package bot
 import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sepuka/myza/def"
+	messageDef "github.com/sepuka/myza/def/income"
 	"github.com/sepuka/myza/def/log"
-	messageDef "github.com/sepuka/myza/def/message"
 	"github.com/sepuka/myza/internal/config"
 	"github.com/sepuka/myza/middleware"
 	"github.com/sepuka/vkbotserver/message"

@@ -1,4 +1,4 @@
-package text
+package message
 
 import "github.com/sepuka/myza/domain"
 

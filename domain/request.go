@@ -2,8 +2,10 @@ package domain
 
 type (
 	TextRequest struct {
-		peerId int
-		msg    string
+		peerId         int
+		msg            string
+		CryptoCurrency CryptoCurrency
+		FiatCurrency   FiatCurrency
 	}
 
 	TextHandler interface {
@@ -13,8 +15,10 @@ type (
 
 func NewTextRequest(peerId int, msg string) TextRequest {
 	return TextRequest{
-		peerId: peerId,
-		msg:    msg,
+		peerId:         peerId,
+		msg:            msg,
+		CryptoCurrency: Btc,
+		FiatCurrency:   Rub,
 	}
 }
 

@@ -1,19 +1,19 @@
-package message
+package income
 
 import (
-	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sepuka/myza/def"
+	"github.com/sepuka/myza/def/blockchain_api"
 	cache2 "github.com/sepuka/myza/def/cache"
 	"github.com/sepuka/myza/def/http"
 	"github.com/sepuka/myza/def/log"
 	"github.com/sepuka/myza/def/vkapi/method"
 	"github.com/sepuka/myza/domain"
 	"github.com/sepuka/myza/internal/config"
-	msgHandler "github.com/sepuka/myza/internal/message"
-	"github.com/sepuka/myza/internal/message/button"
-	"github.com/sepuka/myza/internal/message/handler"
-	"github.com/sepuka/myza/internal/text"
+	msgHandler "github.com/sepuka/myza/internal/income"
+	"github.com/sepuka/myza/internal/income/button"
+	"github.com/sepuka/myza/internal/income/handler"
+	message3 "github.com/sepuka/myza/internal/income/handler/message"
 	api2 "github.com/sepuka/vkbotserver/api"
 	"github.com/sepuka/vkbotserver/message"
 	"go.uber.org/zap"
@@ -39,14 +39,15 @@ func init() {
 					logger         = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
 					vkApi          = ctx.Get(method.ApiDef).(*api2.Api)
 					httpClient     = ctx.Get(http.ClientDef).(*http2.Client)
-					cache          = ctx.Get(cache2.CacheDef).(*redis.Client)
+					cache          = ctx.Get(cache2.CacheDef).(domain.Cache)
+					blockchainApi  = ctx.Get(blockchain_api.BlockchainApiDef).(domain.ExchangeRateConverter)
 					buttonHandlers = map[string]message.Handler{
 						button.StartIdButton:    handler.NewStartHandler(vkApi),
 						button.WithdrawIdButton: handler.NewWithdrawHandler(vkApi),
 					}
 					textHandlers = map[string]domain.TextHandler{
-						handler.UnknownIdHandler: text.NewUnknownRequestHandler(),
-						handler.BalanceIdHandler: text.NewBalanceRequestHandler(logger, httpClient, vkApi, cache),
+						handler.UnknownIdHandler: message3.NewUnknownRequestHandler(),
+						handler.BalanceIdHandler: message3.NewBalanceRequestHandler(logger, httpClient, vkApi, cache, blockchainApi),
 					}
 					textHandler = handler.NewText(vkApi, logger, textHandlers)
 				)

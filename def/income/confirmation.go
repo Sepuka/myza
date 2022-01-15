@@ -1,4 +1,4 @@
-package message
+package income
 
 import (
 	"github.com/sarulabs/di/v2"
