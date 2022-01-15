@@ -5,28 +5,27 @@ import (
 	"fmt"
 	"github.com/sepuka/myza/domain"
 	"github.com/sepuka/myza/errors"
-	http2 "github.com/sepuka/myza/internal/http"
 	"go.uber.org/zap"
 	"net/http"
 )
 
 const (
-	keyTmpl   = `exchange_rate`
-	urlTicker = `https://blockchain.info/ticker`
+	exchangeRateKeyTmpl = `exchange_rate`
+	urlTicker           = `https://blockchain.info/ticker`
 )
 
 type (
 	ExchangeConverter struct {
 		logger *zap.SugaredLogger
 		cache  domain.Cache
-		gate   *http2.Gate
+		gate   domain.Gate
 	}
 )
 
 func NewExchangeConverter(
 	log *zap.SugaredLogger,
 	cache domain.Cache,
-	gate *http2.Gate,
+	gate domain.Gate,
 ) *ExchangeConverter {
 	return &ExchangeConverter{
 		logger: log,
@@ -44,7 +43,7 @@ func (c *ExchangeConverter) Convert(wallet *domain.Wallet, fiat domain.FiatCurre
 		return 0, nil
 	}
 
-	return wallet.FinalBalance * rate.Last, nil
+	return (wallet.FinalBalance / domain.MinorDiv) * rate.Last, nil
 }
 
 func (c *ExchangeConverter) getRate(currency domain.FiatCurrency) (*domain.Rate, error) {
@@ -99,7 +98,7 @@ func (c *ExchangeConverter) getRate(currency domain.FiatCurrency) (*domain.Rate,
 
 func (c *ExchangeConverter) getCache() domain.Rates {
 	var (
-		key   = fmt.Sprintf(keyTmpl)
+		key   = fmt.Sprintf(exchangeRateKeyTmpl)
 		value string
 		rate  domain.Rates
 		err   error
