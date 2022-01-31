@@ -60,9 +60,14 @@ func (b *BalanceRequestHandler) Handle(req domain.TextRequest) error {
 		url          = fmt.Sprintf(addrPattern, req.GetMessage())
 		keyboard     = button.Keyboard{
 			OneTime: true,
-			Buttons: button2.ModeChoose(),
+			Buttons: button2.Buttons(),
 		}
 	)
+
+	// TODO replace it feature toggling
+	if req.GetPeerId() == 557404793 {
+		keyboard.Buttons = button2.ButtonsWithAddr()
+	}
 
 	if wallet = b.getCache(req); wallet == nil {
 		if request, err = http.NewRequest(`GET`, url, nil); err != nil {

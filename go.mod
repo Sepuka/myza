@@ -3,6 +3,8 @@ module github.com/sepuka/myza
 go 1.16
 
 require (
+	github.com/btcsuite/btcd v0.22.0-beta // indirect
+	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/google/go-querystring v1.1.0
 	github.com/onsi/ginkgo v1.16.5 // indirect

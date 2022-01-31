@@ -42,8 +42,9 @@ func init() {
 					cache          = ctx.Get(cache2.CacheDef).(domain.Cache)
 					blockchainApi  = ctx.Get(blockchain_api.BlockchainApiDef).(domain.ExchangeRateConverter)
 					buttonHandlers = map[string]message.Handler{
-						button.StartIdButton:    handler.NewStartHandler(vkApi),
-						button.WithdrawIdButton: handler.NewWithdrawHandler(vkApi),
+						button.StartIdButton:        handler.NewStartHandler(vkApi),
+						button.WithdrawIdButton:     handler.NewWithdrawHandler(vkApi),
+						button.GenerateAddrIdButton: handler.NewGenerateAddrHandler(vkApi),
 					}
 					textHandlers = map[string]domain.TextHandler{
 						handler.UnknownIdHandler: message3.NewUnknownRequestHandler(),
