@@ -9,3 +9,6 @@ server:
 
 log:
     prod: false
+
+crypto:
+    seed: this is seed

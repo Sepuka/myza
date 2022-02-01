@@ -2,8 +2,9 @@ package handler
 
 import (
 	"fmt"
-	"github.com/btcsuite/btcutil"
+	domain2 "github.com/sepuka/myza/domain"
 	"github.com/sepuka/myza/internal/btc"
+	"github.com/sepuka/myza/internal/config"
 	"github.com/sepuka/vkbotserver/api"
 	"github.com/sepuka/vkbotserver/api/button"
 	"github.com/sepuka/vkbotserver/domain"
@@ -11,25 +12,42 @@ import (
 
 type (
 	generateAddrHandler struct {
-		api *api.Api
+		api              *api.Api
+		btcAddrGenerator domain2.CryptoAddressGenerator
+		cfg              config.Crypto
 	}
 )
 
-func NewGenerateAddrHandler(api *api.Api) *generateAddrHandler {
-	return &generateAddrHandler{api: api}
+// NewGenerateAddrHandler handles requests in order to return user's crypto address
+func NewGenerateAddrHandler(
+	api *api.Api,
+	cfg config.Crypto,
+) *generateAddrHandler {
+	return &generateAddrHandler{
+		api: api,
+		cfg: cfg,
+	}
 }
 
 func (h *generateAddrHandler) Handle(req *domain.Request, payload *button.Payload) error {
 	var (
 		peerId    = int(req.Object.Message.FromId)
-		btcUserId = uint32(peerId)
-		addr      btcutil.Address
+		addr      domain2.Address
 		err       error
+		generator domain2.CryptoAddressGenerator
 	)
 
-	if addr, err = btc.NewAddr(btcUserId); err != nil {
+	if generator, err = h.generatorFactoryMethod(req); err != nil {
+		return err
+	}
+
+	if addr, err = generator.Generate(); err != nil {
 		return err
 	}
 
 	return h.api.SendMessage(peerId, fmt.Sprintf(`your address is %s`, addr.String()))
+}
+
+func (h *generateAddrHandler) generatorFactoryMethod(req *domain.Request) (domain2.CryptoAddressGenerator, error) {
+	return btc.NewBIP32AddrGenerator(h.cfg, uint32(req.Object.Message.FromId)), nil
 }

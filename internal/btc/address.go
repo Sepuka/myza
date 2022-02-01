@@ -3,22 +3,39 @@ package btc
 import (
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcutil"
 	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/sepuka/myza/domain"
+	"github.com/sepuka/myza/internal/config"
 )
 
-func NewAddr(userId uint32) (btcutil.Address, error) {
-	var harnessHDSeed [chainhash.HashSize + 4]byte
+type (
+	BIP32AddrGenerator struct {
+		cfg   config.Crypto
+		child uint32
+	}
+)
+
+func NewBIP32AddrGenerator(
+	cfg config.Crypto,
+	child uint32,
+) *BIP32AddrGenerator {
+	return &BIP32AddrGenerator{
+		cfg:   cfg,
+		child: child,
+	}
+}
+
+func (g *BIP32AddrGenerator) Generate() (domain.Address, error) {
 	var net = &chaincfg.MainNetParams
-	hdRoot, err := hdkeychain.NewMaster(harnessHDSeed[:], net)
+	hdRoot, err := hdkeychain.NewMaster([]byte(g.cfg.Seed), net)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	// The first child key from the hd root is reserved as the coinbase
 	// generation address.
-	coinbaseChild, err := hdRoot.Derive(userId)
+	coinbaseChild, err := hdRoot.Derive(g.child)
 	if err != nil {
 		return nil, err
 	}

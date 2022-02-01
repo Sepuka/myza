@@ -6,6 +6,10 @@ import (
 )
 
 type (
+	Crypto struct {
+		Seed string
+	}
+
 	Log struct {
 		Prod bool
 	}
@@ -22,6 +26,7 @@ type (
 		Server config.Config
 		Log    Log
 		Db     Database
+		Crypto Crypto
 	}
 )
 

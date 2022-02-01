@@ -44,7 +44,7 @@ func init() {
 					buttonHandlers = map[string]message.Handler{
 						button.StartIdButton:        handler.NewStartHandler(vkApi),
 						button.WithdrawIdButton:     handler.NewWithdrawHandler(vkApi),
-						button.GenerateAddrIdButton: handler.NewGenerateAddrHandler(vkApi),
+						button.GenerateAddrIdButton: handler.NewGenerateAddrHandler(vkApi, cfg.Crypto),
 					}
 					textHandlers = map[string]domain.TextHandler{
 						handler.UnknownIdHandler: message3.NewUnknownRequestHandler(),
