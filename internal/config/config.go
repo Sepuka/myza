@@ -8,6 +8,7 @@ import (
 type (
 	Crypto struct {
 		Seed string
+		Net  string
 	}
 
 	Log struct {

@@ -12,3 +12,4 @@ log:
 
 crypto:
     seed: this is seed
+    net: test | main

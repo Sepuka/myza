@@ -2,9 +2,19 @@ package domain
 
 import "github.com/btcsuite/btcutil"
 
+const (
+	MainNet = `main`
+	TestNet = `test`
+)
+
 type (
 	CryptoAddress struct {
 		addr Address
+	}
+
+	AddressGeneratorContext struct {
+		Currency CryptoCurrency
+		UserId   uint32
 	}
 
 	Address interface {
@@ -12,7 +22,7 @@ type (
 	}
 
 	CryptoAddressGenerator interface {
-		Generate() (Address, error)
+		Generate(context AddressGeneratorContext) (Address, error)
 	}
 )
 

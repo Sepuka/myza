@@ -3,9 +3,9 @@ package button
 import "github.com/sepuka/vkbotserver/api/button"
 
 const (
-	StartIdButton        = `start`
-	WithdrawIdButton     = `withdraw`
-	GenerateAddrIdButton = `generate_addr`
+	StartIdButton           = `start`
+	WithdrawIdButton        = `withdraw`
+	GenerateBtcAddrIdButton = `generate_btc_addr`
 
 	TextButtonType button.Type = `text`
 
@@ -51,7 +51,7 @@ func ButtonsWithAddr() [][]button.Button {
 					Type:  TextButtonType,
 					Label: GenerateAddr,
 					Payload: button.Payload{
-						Command: GenerateAddrIdButton,
+						Command: GenerateBtcAddrIdButton,
 					}.String(),
 				},
 			},

@@ -11,31 +11,28 @@ import (
 
 type (
 	BIP32AddrGenerator struct {
-		cfg   config.Crypto
-		child uint32
+		cfg config.Crypto
+		net *chaincfg.Params
 	}
 )
 
 func NewBIP32AddrGenerator(
 	cfg config.Crypto,
-	child uint32,
+	net *chaincfg.Params,
 ) *BIP32AddrGenerator {
 	return &BIP32AddrGenerator{
-		cfg:   cfg,
-		child: child,
+		cfg: cfg,
+		net: net,
 	}
 }
 
-func (g *BIP32AddrGenerator) Generate() (domain.Address, error) {
-	var net = &chaincfg.MainNetParams
-	hdRoot, err := hdkeychain.NewMaster([]byte(g.cfg.Seed), net)
+func (g *BIP32AddrGenerator) Generate(ctx domain.AddressGeneratorContext) (domain.Address, error) {
+	hdRoot, err := hdkeychain.NewMaster([]byte(g.cfg.Seed), g.net)
 	if err != nil {
 		return nil, err
 	}
 
-	// The first child key from the hd root is reserved as the coinbase
-	// generation address.
-	coinbaseChild, err := hdRoot.Derive(g.child)
+	coinbaseChild, err := hdRoot.Derive(ctx.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +40,7 @@ func (g *BIP32AddrGenerator) Generate() (domain.Address, error) {
 	if err != nil {
 		return nil, err
 	}
-	coinbaseAddr, err := keyToAddr(coinbaseKey, net)
+	coinbaseAddr, err := keyToAddr(coinbaseKey, g.net)
 	if err != nil {
 		return nil, err
 	}

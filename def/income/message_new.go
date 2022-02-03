@@ -4,6 +4,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sepuka/myza/def"
 	"github.com/sepuka/myza/def/blockchain_api"
+	"github.com/sepuka/myza/def/btc"
 	cache2 "github.com/sepuka/myza/def/cache"
 	"github.com/sepuka/myza/def/http"
 	"github.com/sepuka/myza/def/log"
@@ -41,10 +42,11 @@ func init() {
 					httpClient     = ctx.Get(http.ClientDef).(*http2.Client)
 					cache          = ctx.Get(cache2.CacheDef).(domain.Cache)
 					blockchainApi  = ctx.Get(blockchain_api.BlockchainApiDef).(domain.ExchangeRateConverter)
+					generator      = ctx.Get(btc.Bip32GeneratorDef).(domain.CryptoAddressGenerator)
 					buttonHandlers = map[string]message.Handler{
-						button.StartIdButton:        handler.NewStartHandler(vkApi),
-						button.WithdrawIdButton:     handler.NewWithdrawHandler(vkApi),
-						button.GenerateAddrIdButton: handler.NewGenerateAddrHandler(vkApi, cfg.Crypto),
+						button.StartIdButton:           handler.NewStartHandler(vkApi),
+						button.WithdrawIdButton:        handler.NewWithdrawHandler(vkApi),
+						button.GenerateBtcAddrIdButton: handler.NewGenerateBtcAddrHandler(vkApi, generator),
 					}
 					textHandlers = map[string]domain.TextHandler{
 						handler.UnknownIdHandler: message3.NewUnknownRequestHandler(),
