@@ -13,6 +13,7 @@ type (
 	}
 )
 
+// NewTextRequest handles variety texts
 func NewTextRequest(peerId int, msg string) TextRequest {
 	return TextRequest{
 		peerId:         peerId,
