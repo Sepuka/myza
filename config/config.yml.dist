@@ -13,3 +13,10 @@ log:
 crypto:
     seed: this is seed
     net: test | main
+
+db:
+    name: dbname
+    host: dbhost
+    password: dbpass
+    user: dbuser
+    port: 5432
