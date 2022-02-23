@@ -22,7 +22,7 @@ func (db *UserRepository) GetByExternalId(auth domain.Oauth, id string) (*domain
 	err = db.
 		db.
 		Model(user).
-		Where(`user.oauth = ? AND user.external_id = ?`, auth, id).
+		Where(`"user"."o_auth" = ? AND "user"."external_id" = ?`, auth, id).
 		Select()
 
 	return user, err
