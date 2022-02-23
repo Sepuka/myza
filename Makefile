@@ -4,6 +4,7 @@ init:
 	go mod init
 
 tidy:
+	go clean -modcache
 	go mod tidy
 
 build:
