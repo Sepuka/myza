@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/go-pg/pg"
 	"github.com/sepuka/vkbotserver/domain"
+	"github.com/sepuka/vkbotserver/errors"
 )
 
 type UserRepository struct {
@@ -24,6 +25,10 @@ func (db *UserRepository) GetByExternalId(auth domain.Oauth, id string) (*domain
 		Model(user).
 		Where(`"user"."o_auth" = ? AND "user"."external_id" = ?`, auth, id).
 		Select()
+
+	if err == pg.ErrNoRows {
+		return nil, errors.NoUserFound
+	}
 
 	return user, err
 }
