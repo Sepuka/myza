@@ -3,9 +3,9 @@ package income
 import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sepuka/myza/def"
+	"github.com/sepuka/myza/def/db"
 	"github.com/sepuka/myza/def/http"
 	"github.com/sepuka/myza/def/log"
-	"github.com/sepuka/myza/def/token_store"
 	"github.com/sepuka/myza/internal/config"
 	"github.com/sepuka/vkbotserver/domain"
 	"github.com/sepuka/vkbotserver/message"
@@ -31,9 +31,9 @@ func init() {
 				var (
 					logger     = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
 					httpClient = ctx.Get(http.ClientDef).(*http2.Client)
-					tokenStore = ctx.Get(token_store.VkTokenStoreDef).(domain.OauthStore)
+					userRepo   = ctx.Get(db.UserRepoDef).(domain.UserRepository)
 				)
-				return message.NewVkAuth(cfg.Server.VkOauth, httpClient, logger, tokenStore), nil
+				return message.NewVkAuth(cfg.Server.VkOauth, httpClient, logger, userRepo), nil
 			},
 		})
 	})

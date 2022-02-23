@@ -39,6 +39,7 @@ func GetConfig(path string) (*Config, error) {
 			FlagIgnoreUnknown:   true,
 			FlagDisable:         true,
 			EnvDisable:          true,
+			FileDecoder:         gonfig.DecoderYAML,
 		})
 	)
 	if err != nil {

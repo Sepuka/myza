@@ -6,6 +6,13 @@ server:
     cache:
       enabled: true
       ttl: 1000000000
+    pathprefix: /
+    vkoauth:
+        // redirect uri path of your app
+        vkpath: vk_auth
+        ClientId: 12345
+        ClientSecret: secret
+        RedirectUri: https://your.app
 
 log:
     prod: false
