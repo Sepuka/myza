@@ -45,3 +45,17 @@ func (db *UserRepository) Create(user *domain.User) error {
 
 	return err
 }
+
+func (db *UserRepository) Update(user *domain.User) error {
+	var (
+		err error
+	)
+
+	_, err = db.
+		db.
+		Model(user).
+		WherePK().
+		Update()
+
+	return err
+}
