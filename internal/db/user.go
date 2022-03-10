@@ -16,7 +16,7 @@ func NewUserRepository(db *pg.DB) *UserRepository {
 
 func (db *UserRepository) GetByExternalId(auth domain.Oauth, id string) (*domain.User, error) {
 	var (
-		user *domain.User
+		user = &domain.User{}
 		err  error
 	)
 
