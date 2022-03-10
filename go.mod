@@ -14,7 +14,7 @@ require (
 	github.com/onsi/gomega v1.17.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sarulabs/di/v2 v2.4.2
-	github.com/sepuka/vkbotserver v0.2.11-1
+	github.com/sepuka/vkbotserver v0.2.11-3
 	github.com/spf13/cobra v1.3.0
 	github.com/stevenroose/gonfig v0.1.5
 	github.com/stretchr/testify v1.7.0

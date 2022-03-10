@@ -33,7 +33,7 @@ func init() {
 					httpClient = ctx.Get(http.ClientDef).(*http2.Client)
 					userRepo   = ctx.Get(db.UserRepoDef).(domain.UserRepository)
 				)
-				return message.NewVkAuth(cfg.Server.VkOauth, httpClient, logger, userRepo), nil
+				return message.NewAuthVk(cfg.Server.VkOauth, httpClient, logger, userRepo), nil
 			},
 		})
 	})
