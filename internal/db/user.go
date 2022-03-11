@@ -54,6 +54,7 @@ func (db *UserRepository) Update(user *domain.User) error {
 	_, err = db.
 		db.
 		Model(user).
+		Column(`last_name`, `first_name`, `token`).
 		WherePK().
 		Update()
 
