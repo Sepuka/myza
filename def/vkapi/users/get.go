@@ -1,4 +1,4 @@
-package income
+package users
 
 import (
 	"github.com/sarulabs/di/v2"
@@ -6,38 +6,34 @@ import (
 	"github.com/sepuka/myza/def/db"
 	"github.com/sepuka/myza/def/http"
 	"github.com/sepuka/myza/def/log"
-	"github.com/sepuka/myza/def/vkapi/users"
 	"github.com/sepuka/myza/internal/config"
-	users2 "github.com/sepuka/vkbotserver/api/users"
+	"github.com/sepuka/vkbotserver/api/users"
 	"github.com/sepuka/vkbotserver/domain"
-	"github.com/sepuka/vkbotserver/message"
 	"go.uber.org/zap"
 	http2 "net/http"
 )
 
 const (
-	AuthVkDef = `def.auth.vk`
+	ApiUsersGetDef = `api.users.get.def`
 )
 
 func init() {
 	def.Register(func(builder *di.Builder, cfg *config.Config) error {
 		return builder.Add(di.Def{
-			Name: AuthVkDef,
-			Tags: []di.Tag{
-				{
-					Name: ExecutorDef,
-					Args: nil,
-				},
-			},
+			Name: ApiUsersGetDef,
 			Build: func(ctx di.Container) (interface{}, error) {
 				var (
+					apiUsersGet *users.Get
 					logger      = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
 					httpClient  = ctx.Get(http.ClientDef).(*http2.Client)
 					userRepo    = ctx.Get(db.UserRepoDef).(domain.UserRepository)
-					apiUsersGet = ctx.Get(users.ApiUsersGetDef).(*users2.Get)
 				)
-				return message.NewAuthVk(cfg.Server.VkOauth, httpClient, logger, userRepo, apiUsersGet), nil
+
+				apiUsersGet = users.NewGet(httpClient, logger, userRepo)
+
+				return apiUsersGet, nil
 			},
-		})
+		},
+		)
 	})
 }
