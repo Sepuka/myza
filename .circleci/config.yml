@@ -27,9 +27,9 @@ jobs:
             - "/go/pkg/mod"
       - run: make tests
       - run: make build
-      - run: scp -o "StrictHostKeyChecking no" ./myza myza@${server_name}:/tmp
-      - run: ssh -o "StrictHostKeyChecking no" myza@${server_name} "sudo /etc/init.d/supervisor stop server.myza && mv /tmp/myza ~/bin/ && sudo /etc/init.d/supervisor start server.myza"
-      - run: ssh -o "StrictHostKeyChecking no" myza@${server_name} "sudo /etc/init.d/nginx reload"
+      - run: scp -o "StrictHostKeyChecking no" ./myza myza@${duntek_host}:/tmp
+      - run: ssh -o "StrictHostKeyChecking no" myza@${duntek_host} "sudo /etc/init.d/supervisor stop server.myza && mv /tmp/myza ~/bin/ && sudo /etc/init.d/supervisor start server.myza"
+      - run: ssh -o "StrictHostKeyChecking no" myza@${duntek_host} "sudo /etc/init.d/nginx reload"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
