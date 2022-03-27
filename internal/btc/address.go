@@ -26,6 +26,7 @@ func NewBIP32AddrGenerator(
 	}
 }
 
+// Generate generates address for user
 func (g *BIP32AddrGenerator) Generate(ctx domain.AddressGeneratorContext) (domain.Address, error) {
 	hdRoot, err := hdkeychain.NewMaster([]byte(g.cfg.Seed), g.net)
 	if err != nil {

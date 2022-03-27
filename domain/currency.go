@@ -1,7 +1,7 @@
 package domain
 
 type (
-	// CryptoCurrency is a crypto currency type
+	// CryptoCurrency is a cryptocurrency type
 	CryptoCurrency string
 	// FiatCurrency is a fiat currency type
 	FiatCurrency string

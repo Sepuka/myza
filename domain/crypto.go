@@ -1,6 +1,9 @@
 package domain
 
-import "github.com/btcsuite/btcutil"
+import (
+	"github.com/btcsuite/btcutil"
+	"github.com/sepuka/vkbotserver/domain"
+)
 
 const (
 	MainNet = `main`
@@ -23,6 +26,20 @@ type (
 
 	CryptoAddressGenerator interface {
 		Generate(context AddressGeneratorContext) (Address, error)
+	}
+
+	Crypto struct {
+		Currency CryptoCurrency `pg:",pk"`
+		Address  string         `pg:",pk"`
+		UserId   uint32         `sql:",fk"`
+		User     *domain.User
+	}
+
+	// CryptoRepository keeps crypto user`s addresses
+	CryptoRepository interface {
+		// Assign inserts crypto address to user
+		Assign(*Crypto, Address) error
+		Get(user *domain.User, currency CryptoCurrency) *Crypto
 	}
 )
 

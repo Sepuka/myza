@@ -4,8 +4,10 @@ import (
 	"github.com/go-pg/pg"
 	"github.com/sarulabs/di/v2"
 	"github.com/sepuka/myza/def"
+	"github.com/sepuka/myza/def/log"
 	"github.com/sepuka/myza/internal/config"
 	db2 "github.com/sepuka/myza/internal/db"
+	"go.uber.org/zap"
 	"net"
 	"strconv"
 )
@@ -13,6 +15,7 @@ import (
 const (
 	DatabasePgDef = `postgres.db.def`
 	UserRepoDef   = `repo.user.def`
+	CryptoRepoDef = `repo.crypto.def`
 )
 
 func init() {
@@ -51,6 +54,20 @@ func init() {
 				)
 
 				return db2.NewUserRepository(db), nil
+			},
+		})
+	})
+
+	def.Register(func(builder *di.Builder, cfg *config.Config) error {
+		return builder.Add(di.Def{
+			Name: CryptoRepoDef,
+			Build: func(ctx di.Container) (interface{}, error) {
+				var (
+					db     = ctx.Get(DatabasePgDef).(*pg.DB)
+					logger = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
+				)
+
+				return db2.NewCryptoRepository(db, logger), nil
 			},
 		})
 	})
