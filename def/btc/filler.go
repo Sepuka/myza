@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	CryptoFillerDef = `btc.filler.def`
+	CryptoAssignerDef = `btc.assigner.def`
 )
 
 func init() {
 	def.Register(func(builder *di.Builder, cfg *config.Config) error {
 		return builder.Add(di.Def{
-			Name: CryptoFillerDef,
+			Name: CryptoAssignerDef,
 			Build: func(ctx di.Container) (interface{}, error) {
 				var (
 					logger     = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)

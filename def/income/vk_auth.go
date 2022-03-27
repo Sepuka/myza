@@ -34,17 +34,17 @@ func init() {
 			},
 			Build: func(ctx di.Container) (interface{}, error) {
 				var (
-					logger       = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
-					httpClient   = ctx.Get(http.ClientDef).(*http2.Client)
-					userRepo     = ctx.Get(db.UserRepoDef).(domain.UserRepository)
-					apiUsersGet  = ctx.Get(users.ApiUsersGetDef).(*users2.Get)
-					cryptoFiller = ctx.Get(btc.CryptoFillerDef).(*btc2.CryptoAddressAssigner)
-					callbacks    = []domain.Callback{
+					logger      = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
+					httpClient  = ctx.Get(http.ClientDef).(*http2.Client)
+					userRepo    = ctx.Get(db.UserRepoDef).(domain.UserRepository)
+					apiUsersGet = ctx.Get(users.ApiUsersGetDef).(*users2.Get)
+					assigner    = ctx.Get(btc.CryptoAssignerDef).(*btc2.CryptoAddressAssigner)
+					callbacks   = []domain.Callback{
 						func(user interface{}) {
 							callback.FillVkUserName(apiUsersGet, user.(*domain.User))
 						},
 						func(user interface{}) {
-							callback.AssignBtcAddress(cryptoFiller, user.(*domain.User))
+							callback.AssignBtcAddress(assigner, user.(*domain.User))
 						},
 					}
 				)

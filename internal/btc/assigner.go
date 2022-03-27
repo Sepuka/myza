@@ -37,7 +37,7 @@ func (c *CryptoAddressAssigner) AssignBtc(user *domain2.User) {
 		err error
 	)
 
-	crypto = c.cryptoRepo.Get(user, crypto.Currency)
+	crypto = c.cryptoRepo.Get(user, context.Currency)
 	// address has already assigned
 	if crypto != nil {
 		return
@@ -69,6 +69,7 @@ func (c *CryptoAddressAssigner) AssignBtc(user *domain2.User) {
 			With(
 				zap.Int(`user_id`, user.UserId),
 				zap.String(`currency`, string(crypto.Currency)),
+				zap.Error(err),
 			).
 			Error(`Could not assign crypto address`)
 	}

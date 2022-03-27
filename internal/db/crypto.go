@@ -33,6 +33,10 @@ func (r *CryptoRepository) Get(user *domain2.User, currency domain.CryptoCurrenc
 		Select()
 
 	if err != nil {
+		if err == pg.ErrNoRows {
+			return nil
+		}
+
 		r.
 			logger.
 			With(
@@ -59,6 +63,10 @@ func (r *CryptoRepository) Assign(model *domain.Crypto, address domain.Address) 
 		Model(model).
 		Insert()
 
+	if err != nil {
+		return err
+	}
+
 	r.
 		logger.
 		With(
@@ -69,5 +77,5 @@ func (r *CryptoRepository) Assign(model *domain.Crypto, address domain.Address) 
 		).
 		Debug(`crypto address was assigned`)
 
-	return err
+	return nil
 }
