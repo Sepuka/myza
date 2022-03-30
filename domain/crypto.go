@@ -39,6 +39,7 @@ type (
 	CryptoRepository interface {
 		// Assign inserts crypto address to user
 		Assign(*Crypto, Address) error
+		// Get fetches convenient entity
 		Get(user *domain.User, currency CryptoCurrency) *Crypto
 	}
 )
