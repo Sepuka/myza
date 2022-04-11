@@ -4,6 +4,7 @@ import (
 	"github.com/go-pg/pg"
 	domain2 "github.com/sepuka/myza/domain"
 	"github.com/sepuka/vkbotserver/domain"
+	"time"
 )
 
 type (
@@ -22,9 +23,10 @@ func (s *SessionsRepository) Create(user *domain.User, token string) error {
 	var (
 		err     error
 		session = &domain2.Session{
-			UserId: user.UserId,
-			Token:  token,
-			Oauth:  user.OAuth,
+			UserId:   user.UserId,
+			Token:    token,
+			OAuth:    user.OAuth,
+			Datetime: time.Now(),
 		}
 	)
 

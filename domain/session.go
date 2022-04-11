@@ -9,7 +9,7 @@ type (
 	Session struct {
 		UserId   int
 		Token    string
-		DateTime time.Time    `pg:"default:now(),notnull"`
-		Oauth    domain.Oauth `pg:"notnull"`
+		Datetime time.Time    `pg:"default:now(),notnull"`
+		OAuth    domain.Oauth `pg:"notnull"`
 	}
 )
