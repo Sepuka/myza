@@ -37,6 +37,7 @@ func init() {
 					logger      = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
 					httpClient  = ctx.Get(http.ClientDef).(*http2.Client)
 					userRepo    = ctx.Get(db.UserRepoDef).(domain.UserRepository)
+					sessionRepo = ctx.Get(db.SessionsRepoDef).(domain.SessionsRepository)
 					apiUsersGet = ctx.Get(users.ApiUsersGetDef).(*users2.Get)
 					assigner    = ctx.Get(btc.CryptoAssignerDef).(*btc2.CryptoAddressAssigner)
 					callbacks   = []domain.Callback{
@@ -48,7 +49,7 @@ func init() {
 						},
 					}
 				)
-				return message.NewAuthVk(cfg.Server.VkOauth, httpClient, logger, userRepo, callbacks), nil
+				return message.NewAuthVk(cfg.Server.VkOauth, httpClient, logger, userRepo, sessionRepo, callbacks), nil
 			},
 		})
 	})

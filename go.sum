@@ -369,8 +369,8 @@ github.com/sagikazarmark/crypt v0.3.0/go.mod h1:uD/D+6UF4SrIR1uGEv7bBNkNqLGqUr43
 github.com/sarulabs/di/v2 v2.4.2 h1:A/PDVU41gHYeUbZZKco8dOwPAB2rrFfiwWLJrZsi+h8=
 github.com/sarulabs/di/v2 v2.4.2/go.mod h1:trZu4KPwNLE623mBIIsljn1LLkNE6ee/Pk24b7yzSf8=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
-github.com/sepuka/vkbotserver v0.2.12-2 h1:lY2iyKDsDfxAlsKTYxBVmtP8pXTfgP2JDZ/ud5hq5UQ=
-github.com/sepuka/vkbotserver v0.2.12-2/go.mod h1:3yrNJjMGgow9n5PNvLwtFedHamWa6lNg4gHPyEckas0=
+github.com/sepuka/vkbotserver v0.2.13 h1:GvsQoQKEzeFhWKCEb0oMu/9388aUl1lwGMIV47nap4U=
+github.com/sepuka/vkbotserver v0.2.13/go.mod h1:3yrNJjMGgow9n5PNvLwtFedHamWa6lNg4gHPyEckas0=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=

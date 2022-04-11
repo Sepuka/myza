@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	DatabasePgDef = `postgres.db.def`
-	UserRepoDef   = `repo.user.def`
-	CryptoRepoDef = `repo.crypto.def`
+	DatabasePgDef   = `postgres.db.def`
+	UserRepoDef     = `repo.user.def`
+	CryptoRepoDef   = `repo.crypto.def`
+	SessionsRepoDef = `repo.sessions.def`
 )
 
 func init() {
@@ -54,6 +55,19 @@ func init() {
 				)
 
 				return db2.NewUserRepository(db), nil
+			},
+		})
+	})
+
+	def.Register(func(builder *di.Builder, cfg *config.Config) error {
+		return builder.Add(di.Def{
+			Name: SessionsRepoDef,
+			Build: func(ctx di.Container) (interface{}, error) {
+				var (
+					db = ctx.Get(DatabasePgDef).(*pg.DB)
+				)
+
+				return db2.NewSessionsRepository(db), nil
 			},
 		})
 	})
