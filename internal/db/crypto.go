@@ -6,6 +6,7 @@ import (
 	"github.com/sepuka/myza/domain"
 	domain2 "github.com/sepuka/vkbotserver/domain"
 	"go.uber.org/zap"
+	"time"
 )
 
 type CryptoRepository struct {
@@ -52,7 +53,7 @@ func (r *CryptoRepository) Get(user *domain2.User, currency domain.CryptoCurrenc
 	return crypto
 }
 
-func (r *CryptoRepository) Assign(model *domain.Crypto, address domain.Address) error {
+func (r *CryptoRepository) AssignAddress(model *domain.Crypto, address domain.Address) error {
 	var (
 		err    error
 		result orm.Result
@@ -78,4 +79,39 @@ func (r *CryptoRepository) Assign(model *domain.Crypto, address domain.Address) 
 		Debug(`crypto address was assigned`)
 
 	return nil
+}
+
+func (r *CryptoRepository) UpdateBalance(model *domain.Crypto, balance float64) error {
+	var (
+		err error
+	)
+
+	model.Balance = balance
+
+	_, err = r.
+		db.
+		Model(model).
+		Column(`balance`).
+		Where(`currency = ? AND address = ?`, model.Currency, model.Address).
+		Update()
+
+	return err
+}
+
+func (r *CryptoRepository) FindOutdated(date time.Time, limit int) ([]*domain.Crypto, error) {
+	var (
+		cryptos = make([]*domain.Crypto, limit)
+		err     error
+	)
+
+	err = r.
+		db.
+		Model(&cryptos).
+		ColumnExpr(`crypto.*`).
+		Join(`JOIN users u ON u.user_id = crypto.user_id`).
+		Where(`u.active = ? AND (crypto.updated_at < ? OR crypto.updated_at IS NULL)`, true, date).
+		Limit(limit).
+		Select()
+
+	return cryptos, err
 }

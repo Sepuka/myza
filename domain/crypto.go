@@ -3,6 +3,7 @@ package domain
 import (
 	"github.com/btcsuite/btcutil"
 	"github.com/sepuka/vkbotserver/domain"
+	"time"
 )
 
 const (
@@ -29,18 +30,24 @@ type (
 	}
 
 	Crypto struct {
-		Currency CryptoCurrency `pg:",pk"`
-		Address  string         `pg:",pk"`
-		UserId   uint32         `sql:",fk"`
-		User     *domain.User
+		Currency  CryptoCurrency `pg:",pk"`
+		Address   string         `pg:",pk"`
+		UserId    uint32         `sql:",fk"`
+		Balance   float64
+		UpdatedAt time.Time
+		User      *domain.User
 	}
 
 	// CryptoRepository keeps crypto user`s addresses
 	CryptoRepository interface {
-		// Assign inserts crypto address to user
-		Assign(*Crypto, Address) error
+		// AssignAddress inserts crypto address to user
+		AssignAddress(*Crypto, Address) error
 		// Get fetches convenient entity
 		Get(user *domain.User, currency CryptoCurrency) *Crypto
+		// UpdateBalance updates balance field only
+		UpdateBalance(user *Crypto, balance float64) error
+		// FindOutdated looking for outdated rows
+		FindOutdated(date time.Time, limit int) ([]*Crypto, error)
 	}
 )
 

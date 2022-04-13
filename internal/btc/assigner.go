@@ -61,7 +61,7 @@ func (c *CryptoAddressAssigner) AssignBtc(user *domain2.User) {
 		Address:  address.String(),
 	}
 
-	err = c.cryptoRepo.Assign(crypto, address)
+	err = c.cryptoRepo.AssignAddress(crypto, address)
 
 	if err != nil {
 		c.

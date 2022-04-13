@@ -3,9 +3,10 @@ package errors
 import "errors"
 
 var (
-	UnknownCurrency = errors.New(`unknown currency`)
-	InvalidNet      = errors.New(`invalid blockchain net`)
-	OauthTokenError = errors.New(`Oauth token error`)
+	UnknownCurrency        = errors.New(`unknown currency`)
+	InvalidNet             = errors.New(`invalid blockchain net`)
+	OauthTokenError        = errors.New(`oauth token error`)
+	BlockchainBalanceError = errors.New(`get balance error`)
 )
 
 // NewUnknownCurrencyError instance an InvalidJson error
@@ -30,5 +31,12 @@ func NewOauthTokenError(msg string, err error) MyzaError {
 		err:           OauthTokenError,
 		message:       msg,
 		originalError: err,
+	}
+}
+
+func NewBlockchainBalanceError(msg string) MyzaError {
+	return MyzaError{
+		err:     BlockchainBalanceError,
+		message: msg,
 	}
 }
