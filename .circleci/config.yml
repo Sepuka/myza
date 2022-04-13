@@ -28,7 +28,7 @@ jobs:
       - run: make tests
       - run: make build
       - run: scp -o "StrictHostKeyChecking no" ./myza myza@${duntek_host}:/tmp
-      - run: ssh -o "StrictHostKeyChecking no" myza@${duntek_host} "sudo /etc/init.d/supervisor stop server.myza && mv /tmp/myza ~/bin/ && sudo /etc/init.d/supervisor start server.myza"
+      - run: ssh -o "StrictHostKeyChecking no" myza@${duntek_host} "sudo /etc/init.d/supervisor stop *.myza && mv /tmp/myza ~/bin/ && sudo /etc/init.d/supervisor start *.myza"
       - run: ssh -o "StrictHostKeyChecking no" myza@${duntek_host} "sudo /etc/init.d/nginx reload"
 
 # Invoke jobs via workflows

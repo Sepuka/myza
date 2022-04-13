@@ -51,7 +51,7 @@ func (w *BalanceUpdater) Work() error {
 
 	for !stop {
 		go w.update()
-		time.Sleep(time.Second * 60)
+		time.Sleep(time.Hour * 2)
 	}
 
 	return nil
