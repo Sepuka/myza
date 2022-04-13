@@ -119,7 +119,7 @@ func (bc *Score) GetBalance(crypto *domain.Crypto) (float64, error) {
 		bc.setCache(*crypto, wallet)
 	}
 
-	return wallet.BalanceToBTC(), err
+	return wallet.FinalBalance, err
 }
 
 func (bc *Score) getCache(crypto domain.Crypto) *domain.Wallet {
