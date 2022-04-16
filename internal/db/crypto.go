@@ -81,17 +81,16 @@ func (r *CryptoRepository) AssignAddress(model *domain.Crypto, address domain.Ad
 	return nil
 }
 
-func (r *CryptoRepository) UpdateBalance(model *domain.Crypto, balance float64) error {
+func (r *CryptoRepository) UpdateBalance(model *domain.Crypto) error {
 	var (
 		err error
 	)
 
-	model.Balance = balance
-
+	model.UpdatedAt = time.Now()
 	_, err = r.
 		db.
 		Model(model).
-		Column(`balance`).
+		Column(`balance`, `fiat`, `updated_at`).
 		Where(`currency = ? AND address = ?`, model.Currency, model.Address).
 		Update()
 

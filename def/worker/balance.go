@@ -23,12 +23,13 @@ func init() {
 			Name: BalanceDef,
 			Build: func(ctx di.Container) (interface{}, error) {
 				var (
-					cryptoRepo   = ctx.Get(db.CryptoRepoDef).(domain.CryptoRepository)
-					scoreFetcher = ctx.Get(blockchain_api.ScoreWalletDef).(*blockchain_api2.Score)
-					logger       = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
+					cryptoRepo    = ctx.Get(db.CryptoRepoDef).(domain.CryptoRepository)
+					scoreFetcher  = ctx.Get(blockchain_api.ScoreWalletDef).(*blockchain_api2.Score)
+					rateConverter = ctx.Get(blockchain_api.BlockchainApiDef).(domain.ExchangeRateConverter)
+					logger        = ctx.Get(log.LoggerDef).(*zap.SugaredLogger)
 				)
 
-				return worker.NewBalanceUpdater(cryptoRepo, scoreFetcher, logger), nil
+				return worker.NewBalanceUpdater(cryptoRepo, scoreFetcher, rateConverter, logger), nil
 			},
 		})
 	})

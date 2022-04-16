@@ -11,14 +11,15 @@ import (
 )
 
 const (
-	updatedLimit = 10
+	updatedLimit   = 10
+	outdatedPeriod = time.Hour * 2
 )
 
 type (
 	BalanceUpdater struct {
-		date       time.Time
 		cryptoRepo domain.CryptoRepository
 		score      *blockchain_api.Score
+		converter  domain.ExchangeRateConverter
 		logger     *zap.SugaredLogger
 	}
 )
@@ -26,13 +27,14 @@ type (
 func NewBalanceUpdater(
 	cryptoRepo domain.CryptoRepository,
 	balanceChecker *blockchain_api.Score,
+	converter domain.ExchangeRateConverter,
 	logger *zap.SugaredLogger,
 ) *BalanceUpdater {
 	return &BalanceUpdater{
 		cryptoRepo: cryptoRepo,
 		score:      balanceChecker,
+		converter:  converter,
 		logger:     logger,
-		date:       time.Now().Add(-time.Hour),
 	}
 }
 
@@ -51,7 +53,7 @@ func (w *BalanceUpdater) Work() error {
 
 	for !stop {
 		go w.update()
-		time.Sleep(time.Hour * 2)
+		time.Sleep(outdatedPeriod)
 	}
 
 	return nil
@@ -59,33 +61,56 @@ func (w *BalanceUpdater) Work() error {
 
 func (w *BalanceUpdater) update() {
 	var (
-		crypto  *domain.Crypto
-		cryptos []*domain.Crypto
-		err     error
-		balance float64
+		crypto      *domain.Crypto
+		cryptos     []*domain.Crypto
+		err         error
+		wallet      *domain.Wallet
+		fiatBalance float64
+		date        = time.Now().Add(-outdatedPeriod)
 	)
 
-	if cryptos, err = w.cryptoRepo.FindOutdated(w.date, updatedLimit); err != nil {
+	if cryptos, err = w.cryptoRepo.FindOutdated(date, updatedLimit); err != nil {
 		w.
 			logger.
 			With(
 				zap.Error(err),
-				zap.Time(`from`, w.date),
+				zap.Time(`from`, date),
 			).
-			Error(`Could not find any outdated cryptos`)
+			Error(`Could not find any outdated cryptos.`)
 
 		return
 	}
 
 	for _, crypto = range cryptos {
-		if balance, err = w.score.GetBalance(crypto); err == nil {
-			if err = w.cryptoRepo.UpdateBalance(crypto, balance); err != nil {
+		if crypto.Address == `` {
+			continue
+		}
+
+		if wallet, err = w.score.GetBalance(crypto); err == nil {
+			if fiatBalance, err = w.converter.Convert(wallet, domain.Rub); err == nil {
+				crypto.Balance = wallet.FinalBalance
+				crypto.Fiat = fiatBalance
+				if err = w.cryptoRepo.UpdateBalance(crypto); err != nil {
+					w.
+						logger.
+						With(
+							zap.Error(err),
+							zap.Float64(`fiat balance`, fiatBalance),
+							zap.Float64(`crypto balance`, wallet.FinalBalance),
+						).
+						Error(`Could not update wallet balance.`)
+				}
+			} else {
 				w.
 					logger.
 					With(
 						zap.Error(err),
+						zap.Float64(`fiat balance`, fiatBalance),
+						zap.Float64(`crypto balance`, wallet.FinalBalance),
 					).
-					Error(`Could not update wallet balance`)
+					Error(`Could not convert wallet value to fiat currency.`)
+
+				return
 			}
 		} else {
 			return

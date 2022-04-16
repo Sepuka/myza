@@ -39,7 +39,7 @@ func NewScoreFetcher(
 	}
 }
 
-func (bc *Score) GetBalance(crypto *domain.Crypto) (float64, error) {
+func (bc *Score) GetBalance(crypto *domain.Crypto) (*domain.Wallet, error) {
 	var (
 		err          error
 		resp         *http.Response
@@ -59,7 +59,7 @@ func (bc *Score) GetBalance(crypto *domain.Crypto) (float64, error) {
 				).
 				Errorf(`Build balance API request error`)
 
-			return 0, err
+			return nil, err
 		}
 
 		if resp, err = bc.client.Do(request); err != nil || resp.StatusCode != 200 {
@@ -76,9 +76,9 @@ func (bc *Score) GetBalance(crypto *domain.Crypto) (float64, error) {
 				Error(`Send balance API request error`)
 
 			if err != nil {
-				return 0, err
+				return nil, err
 			} else {
-				return 0, errors.NewBlockchainBalanceError(string(body))
+				return nil, errors.NewBlockchainBalanceError(string(body))
 			}
 		}
 
@@ -92,7 +92,7 @@ func (bc *Score) GetBalance(crypto *domain.Crypto) (float64, error) {
 				).
 				Errorf(`Dump API response error`)
 
-			return 0, err
+			return nil, err
 		}
 
 		bc.
@@ -114,12 +114,12 @@ func (bc *Score) GetBalance(crypto *domain.Crypto) (float64, error) {
 				).
 				Error(`error while decoding Api response`)
 
-			return 0, err
+			return nil, err
 		}
 		bc.setCache(*crypto, wallet)
 	}
 
-	return wallet.FinalBalance, err
+	return wallet, err
 }
 
 func (bc *Score) getCache(crypto domain.Crypto) *domain.Wallet {

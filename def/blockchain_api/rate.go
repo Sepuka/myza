@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	BlockchainApiDef = `blockchain.api.def`
+	BlockchainApiDef = `blockchain.api.rate.def`
 )
 
 func init() {
