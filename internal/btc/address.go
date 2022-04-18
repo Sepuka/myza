@@ -1,6 +1,7 @@
 package btc
 
 import (
+	"fmt"
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcutil"
@@ -14,8 +15,15 @@ type (
 		cfg config.Crypto
 		net *chaincfg.Params
 	}
+
+	CryptoAddress struct {
+		pub fmt.Stringer
+		wif fmt.Stringer
+		uid uint32
+	}
 )
 
+// NewBIP32AddrGenerator creates BIP32 HD key generator
 func NewBIP32AddrGenerator(
 	cfg config.Crypto,
 	net *chaincfg.Params,
@@ -27,7 +35,7 @@ func NewBIP32AddrGenerator(
 }
 
 // Generate generates address for user
-func (g *BIP32AddrGenerator) Generate(ctx domain.AddressGeneratorContext) (domain.Address, error) {
+func (g *BIP32AddrGenerator) Generate(ctx *domain.AddressGeneratorContext) (domain.Address, error) {
 	hdRoot, err := hdkeychain.NewMaster([]byte(g.cfg.Seed), g.net)
 	if err != nil {
 		return nil, err
@@ -37,16 +45,13 @@ func (g *BIP32AddrGenerator) Generate(ctx domain.AddressGeneratorContext) (domai
 	if err != nil {
 		return nil, err
 	}
+
 	coinbaseKey, err := coinbaseChild.ECPrivKey()
 	if err != nil {
 		return nil, err
 	}
-	coinbaseAddr, err := keyToAddr(coinbaseKey, g.net)
-	if err != nil {
-		return nil, err
-	}
 
-	return coinbaseAddr, nil
+	return NewCryptoAddress(coinbaseKey, g.net, ctx.UserId)
 }
 
 func keyToAddr(key *btcec.PrivateKey, net *chaincfg.Params) (btcutil.Address, error) {
@@ -57,4 +62,34 @@ func keyToAddr(key *btcec.PrivateKey, net *chaincfg.Params) (btcutil.Address, er
 	}
 
 	return pubKeyAddr.AddressPubKeyHash(), nil
+}
+
+func NewCryptoAddress(key *btcec.PrivateKey, net *chaincfg.Params, uid uint32) (*CryptoAddress, error) {
+	wif, err := btcutil.NewWIF(key, net, false)
+	if err != nil {
+		return nil, err
+	}
+
+	coinbaseAddr, err := keyToAddr(key, net)
+	if err != nil {
+		return nil, err
+	}
+
+	return &CryptoAddress{
+		pub: coinbaseAddr,
+		wif: wif,
+		uid: uid,
+	}, nil
+}
+
+func (a *CryptoAddress) Pub() string {
+	return a.pub.String()
+}
+
+func (a *CryptoAddress) Wif() string {
+	return a.wif.String()
+}
+
+func (a *CryptoAddress) Uid() uint32 {
+	return a.uid
 }

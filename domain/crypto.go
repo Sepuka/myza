@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"github.com/btcsuite/btcutil"
 	"github.com/sepuka/vkbotserver/domain"
 	"time"
 )
@@ -12,21 +11,19 @@ const (
 )
 
 type (
-	CryptoAddress struct {
-		addr Address
-	}
-
 	AddressGeneratorContext struct {
 		Currency CryptoCurrency
 		UserId   uint32
 	}
 
 	Address interface {
-		String() string
+		Pub() string
+		Wif() string
+		Uid() uint32
 	}
 
 	CryptoAddressGenerator interface {
-		Generate(context AddressGeneratorContext) (Address, error)
+		Generate(context *AddressGeneratorContext) (Address, error)
 	}
 
 	// Crypto represents the last state of user`s balance
@@ -52,12 +49,3 @@ type (
 		FindOutdated(date time.Time, limit int) ([]*Crypto, error)
 	}
 )
-
-func (a *CryptoAddress) String() string {
-	switch a.addr.(type) {
-	case btcutil.Address:
-		return a.String()
-	default:
-		return ``
-	}
-}

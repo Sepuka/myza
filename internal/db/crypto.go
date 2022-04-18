@@ -72,7 +72,7 @@ func (r *CryptoRepository) AssignAddress(model *domain.Crypto, address domain.Ad
 		logger.
 		With(
 			zap.Uint32(`user`, model.UserId),
-			zap.String(`address`, address.String()),
+			zap.String(`address`, address.Pub()),
 			zap.String(`currency`, string(model.Currency)),
 			zap.Int(`affected rows`, result.RowsAffected()),
 		).

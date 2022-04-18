@@ -13,11 +13,11 @@ type CryptoAddressGenerator struct {
 }
 
 // Generate provides a mock function with given fields: context
-func (_m *CryptoAddressGenerator) Generate(context domain.AddressGeneratorContext) (domain.Address, error) {
+func (_m *CryptoAddressGenerator) Generate(context *domain.AddressGeneratorContext) (domain.Address, error) {
 	ret := _m.Called(context)
 
 	var r0 domain.Address
-	if rf, ok := ret.Get(0).(func(domain.AddressGeneratorContext) domain.Address); ok {
+	if rf, ok := ret.Get(0).(func(*domain.AddressGeneratorContext) domain.Address); ok {
 		r0 = rf(context)
 	} else {
 		if ret.Get(0) != nil {
@@ -26,7 +26,7 @@ func (_m *CryptoAddressGenerator) Generate(context domain.AddressGeneratorContex
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(domain.AddressGeneratorContext) error); ok {
+	if rf, ok := ret.Get(1).(func(*domain.AddressGeneratorContext) error); ok {
 		r1 = rf(context)
 	} else {
 		r1 = ret.Error(1)

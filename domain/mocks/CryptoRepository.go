@@ -6,6 +6,8 @@ import (
 	domain "github.com/sepuka/myza/domain"
 	mock "github.com/stretchr/testify/mock"
 
+	time "time"
+
 	vkbotserverdomain "github.com/sepuka/vkbotserver/domain"
 )
 
@@ -14,8 +16,8 @@ type CryptoRepository struct {
 	mock.Mock
 }
 
-// Assign provides a mock function with given fields: _a0, _a1
-func (_m *CryptoRepository) Assign(_a0 *domain.Crypto, _a1 domain.Address) error {
+// AssignAddress provides a mock function with given fields: _a0, _a1
+func (_m *CryptoRepository) AssignAddress(_a0 *domain.Crypto, _a1 domain.Address) error {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 error
@@ -26,6 +28,29 @@ func (_m *CryptoRepository) Assign(_a0 *domain.Crypto, _a1 domain.Address) error
 	}
 
 	return r0
+}
+
+// FindOutdated provides a mock function with given fields: date, limit
+func (_m *CryptoRepository) FindOutdated(date time.Time, limit int) ([]*domain.Crypto, error) {
+	ret := _m.Called(date, limit)
+
+	var r0 []*domain.Crypto
+	if rf, ok := ret.Get(0).(func(time.Time, int) []*domain.Crypto); ok {
+		r0 = rf(date, limit)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Crypto)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(time.Time, int) error); ok {
+		r1 = rf(date, limit)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Get provides a mock function with given fields: user, currency
@@ -39,6 +64,20 @@ func (_m *CryptoRepository) Get(user *vkbotserverdomain.User, currency domain.Cr
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Crypto)
 		}
+	}
+
+	return r0
+}
+
+// UpdateBalance provides a mock function with given fields: user
+func (_m *CryptoRepository) UpdateBalance(user *domain.Crypto) error {
+	ret := _m.Called(user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*domain.Crypto) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
 	}
 
 	return r0

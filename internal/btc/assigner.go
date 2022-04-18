@@ -30,11 +30,8 @@ func (c *CryptoAddressAssigner) AssignBtc(user *domain2.User) {
 	var (
 		address domain.Address
 		crypto  *domain.Crypto
-		context = domain.AddressGeneratorContext{
-			Currency: domain.Btc,
-			UserId:   uint32(user.UserId),
-		}
-		err error
+		context = NewAddressGeneratorContext(domain.Btc, uint32(user.UserId))
+		err     error
 	)
 
 	crypto = c.cryptoRepo.Get(user, context.Currency)
@@ -58,7 +55,7 @@ func (c *CryptoAddressAssigner) AssignBtc(user *domain2.User) {
 	crypto = &domain.Crypto{
 		Currency: domain.Btc,
 		UserId:   uint32(user.UserId),
-		Address:  address.String(),
+		Address:  address.Pub(),
 	}
 
 	err = c.cryptoRepo.AssignAddress(crypto, address)
